@@ -1,7 +1,10 @@
 package com.znothings.nothings.utils;
 
+import com.sun.mail.util.MailSSLSocketFactory;
+
 import javax.mail.*;
 import javax.mail.internet.*;
+import java.security.GeneralSecurityException;
 import java.util.Properties;
 
 /**
@@ -15,7 +18,7 @@ import java.util.Properties;
  */
 public class EmailSendUtil {
     /** 发送邮箱的主机*/
-    public static final String HOST="smtp.qq.com";
+    public static final String HOST="smtp.163.com";
     /** 发送邮箱协议
      * 1、SMTP协议：全称为 Simple Mail Transfer Protocol，简单邮件传输协议。它定义了邮件客户端软件和SMTP邮件服务器之间，以及两台SMTP邮件服务器之间的通信规则。
      * 2、POP3协议：全称为 Post Office Protocol，邮局协议。它定义了邮件客户端软件和POP3邮件服务器的通信规则。
@@ -25,18 +28,24 @@ public class EmailSendUtil {
     /** 是否需要验证账号密码*/
     public static final String AUTH="true";
     /** 发送方账号密码*/
-    public static final String FROM="znothing@163.com";
-    public static final String PASSWORD="com.znothings";
+    public static final String FROM="znothings@163.com";
+//    public static final String PASSWORD="com.znothings";
+    public static final String PASSWORD="";
     /** 是否开启DEBUG模式*/
     private static Boolean DEBUG = true;
 
-    public static boolean send() throws MessagingException {
+    public static boolean send() throws MessagingException, GeneralSecurityException {
         Properties properties = new Properties();
 //        Properties properties = System.getProperties();
         properties.setProperty("mail.host",HOST);
         properties.setProperty("mail.transport.protocol",PROTOCOL);
         properties.setProperty("mail.smtp.auth",AUTH);
 
+        //qq邮箱必须增加ssl
+       /* MailSSLSocketFactory sf = new MailSSLSocketFactory();
+        sf.setTrustAllHosts(true);
+        properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.ssl.socketFactory", sf);*/
         //使用JavaMail发送邮件的5个步骤
         //1.创建session
         Session session =Session.getInstance(properties);
@@ -68,11 +77,11 @@ public class EmailSendUtil {
      * to字段 　　  --用于指明收件人
      * cc字段 　　  -- 抄送，将邮件发送给收件人的同时抄送给另一个收件人，收件人可以看到邮件抄送给了谁
      * bcc字段 　　 -- 密送，将邮件发送给收件人的同时将邮件秘密发送给另一个收件人，收件人无法看到邮件密送给了谁
-     * @param session
+     * @param session 上下文
      * @return
      * @throws MessagingException
      */
-    public static Message createMail(Session session) throws MessagingException {
+    private static Message createMail(Session session) throws MessagingException {
         //1.创建邮件对象
         MimeMessage mimeMessage = new MimeMessage(session);
         //2.指明发件人
@@ -85,5 +94,9 @@ public class EmailSendUtil {
         //5.邮件的内容
         mimeMessage.setContent("你好","text/html;charset=UTF-8");
         return mimeMessage;
+    }
+
+    public static void main(String[] args) throws MessagingException, GeneralSecurityException {
+        EmailSendUtil.send();
     }
 }
